@@ -78,15 +78,14 @@ namespace MiNET.Plugins
 			pluginDirectoryPaths = Config.GetProperty("PluginDirectory", pluginDirectoryPaths);
 			//HACK: Make it possible to define multiple PATH;PATH;PATH
 
+			if (string.IsNullOrEmpty(pluginDirectoryPaths))
+				Log.Warn("Plugin directory path is empty. Write absolute path to Plugins folder in /MiNET.Console/server.conf.");
+
 			foreach (string dirPath in pluginDirectoryPaths.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries))
 			{
-				if (dirPath == null) continue;
-
 				string pluginDirectory = Path.GetFullPath(dirPath);
 
-				Log.Debug($"Looking for plugin assemblies in directory {pluginDirectory}");
-
-				if (!Directory.Exists(pluginDirectory)) continue;
+				Log.Warn($"Looking for plugin assemblies in directory '{pluginDirectory}'");
 
 				_currentPath = pluginDirectory;
 
@@ -97,7 +96,7 @@ namespace MiNET.Plugins
 
 				pluginPaths.AddRange(Directory.GetFiles(pluginDirectory, "*.dll", SearchOption.AllDirectories));
 				pluginPaths.AddRange(Directory.GetFiles(pluginDirectory, "*.exe", SearchOption.AllDirectories));
-				pluginPaths.ForEach(path => Log.Debug($"Looking for plugins in assembly {path}"));
+				pluginPaths.ForEach(path => Console.WriteLine($"Looking for plugins in assembly {path}"));
 
 				foreach (string pluginPath in pluginPaths)
 				{

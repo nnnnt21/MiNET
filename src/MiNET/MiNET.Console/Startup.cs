@@ -61,8 +61,12 @@ namespace MiNET.Console
 			Log.Info(MiNetServer.MiNET);
 			System.Console.WriteLine(MiNetServer.MiNET);
 
-			var currentProcess = Process.GetCurrentProcess();
-			currentProcess.ProcessorAffinity = (IntPtr) Config.GetProperty("ProcessorAffinity", (int) currentProcess.ProcessorAffinity);
+			// Processor affinity is not supported on MacOSX and Unix
+			if (Environment.OSVersion.Platform != PlatformID.MacOSX && Environment.OSVersion.Platform != PlatformID.Unix)
+			{
+				var currentProcess = Process.GetCurrentProcess();
+				currentProcess.ProcessorAffinity = (IntPtr) Config.GetProperty("ProcessorAffinity", (int) currentProcess.ProcessorAffinity);
+			}
 
 			var service = new MiNetServer();
 			Log.Info("Starting...");
@@ -77,6 +81,15 @@ namespace MiNET.Console
 
 			System.Console.WriteLine("MiNET running. Press <enter> to stop service.");
 			System.Console.ReadLine();
+			// WIP in case you want console to also execute commands
+			/*System.Console.WriteLine("MiNET running. Type 'stop' to end service.");
+			String input;
+			do
+			{
+				input = System.Console.ReadLine();
+			} while (input != "stop" || input != "end");*/
+
+
 			service.StopServer();
 		}
 	}
